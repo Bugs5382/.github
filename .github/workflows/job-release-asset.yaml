@@ -1,0 +1,26 @@
+name: Release Asset
+# Attaches release-drafter.yml to the GitHub Release as a plain asset, so
+# Bugs5382/release-drafter-action's `extends` input (owner/repo@tag, default
+# asset name release-drafter.yml) can pull this repo's config at a pinned
+# tag. GitHub computes and reports the asset's sha256 automatically; extends
+# checks the download against it.
+on:
+  release:
+    types: [published]
+permissions:
+  contents: write
+jobs:
+  attach:
+    name: 📎 Attach release-drafter.yml
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.target_commitish }}
+      - name: Upload asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" .github/release-drafter.yml --clobber

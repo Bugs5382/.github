@@ -5,50 +5,32 @@ hook-enforced rules). Keep this file current when the build, layout, or public A
 
 ## What this is
 
-Shared release-drafter config for Bugs5382 repos
-
-<!-- Fill in: what the project does, what it ships (library, service, action, CLI), and the one or
-two things an agent must understand before changing it. -->
+GitHub's special `.github` repository for the Bugs5382 account: a config-only repo, no code to
+build or test. It holds the canonical `release-drafter.yml` shared across Bugs5382 repos, plus the
+community-health and issue/PR templates GitHub falls back to for any Bugs5382 repo that does not
+provide its own.
 
 ## Using .github
 
-<!-- If this project is consumed by others (a library/plugin/action), describe the contract a
-consumer must respect: the single entry point, the public surface, required options, and anything
-that must not be bypassed. Delete this section for a leaf application. -->
+`.github/release-drafter.yml` is the public surface. Another repo consumes it through
+[`Bugs5382/release-drafter-action`](https://github.com/Bugs5382/release-drafter-action)'s `extends`
+input, pinned at a tag of this repo (`Bugs5382/.github@vX.Y.Z`), never a branch or a moving
+major/minor tag. A change here only reaches a consumer at its next release and re-pin; nothing here
+is read live off `main`.
 
 ## Layout
 
-<!-- The directories that matter and what lives in each. Keep it short; point at the entry points. -->
-
-- `src/` - <what>
-- `<tests dir>/` - <what>
+- `.github/release-drafter.yml` - the canonical config. `job-release-asset.yaml` re-attaches it to
+  every published release as a release asset of the same name.
+- `.github/workflows/` - this repo's own CI (PR checks, label checker/sync, actionlint) plus
+  `job-release-asset.yaml`. No build/test workflow: there is no code to build.
+- `.github/ISSUE_TEMPLATE/`, `PULL_REQUEST_TEMPLATE.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`,
+  `SECURITY.md`, `SUPPORT.md`, `FUNDING.yml` - the account-wide fallbacks GitHub uses for any
+  Bugs5382 repo that does not have its own copy.
 
 ## Build, test, lint
 
-<!-- The exact commands. Pull these from package.json scripts (npm), the Taskfile (Go/Task), or
-pyproject (Python) so they stay accurate. -->
-
-- Build: `<command>`
-- Test: `<command>` (note any service/fixture the integration tests require)
-- Lint: `<command>`
-- Package checks (npm packages), after a build: `npm run check:pack` (contents and ceiling),
-  `npm run check:pack:growth` (growth against the last release), `npm run check:install`
-  (install the tarball, import ESM and CJS); see CLAUDE.md "npm package contents"
-- License headers / docs: `<command>`
-
-## Logging
-
-Follow the logging rules in `CLAUDE.md`. In short:
-
-- Log generously: entry and exit of significant operations, decisions and branches, retries, state
-  changes, external calls (target, duration, outcome), and every error with its context.
-- Levels: `trace` for step-by-step detail, `debug` for flow, `info` for lifecycle, `warn` and
-  `error` for problems. The environment filters the volume, so err on the side of too much.
-- Environments: local dev `trace` with `LOG_FORMAT=console` (never JSON), dev cluster `debug`,
-  qa/staging `info`, production `error`. Every cluster environment logs JSON. Set levels through
-  `LOG_LEVEL` and `LOG_FORMAT`, never in code; local settings live in the run target or
-  `.env.example`.
-- Never log secrets, tokens, or personal data, not even at `trace`. Log an opaque or keyed ID.
+Nothing to build or test; there is no source code. `yamllint` and `actionlint` cover the YAML.
 
 ## Conventions and gotchas
 
@@ -56,4 +38,9 @@ Follow the logging rules in `CLAUDE.md`. In short:
   `.claude/hooks` (run `bash .claude/hooks/install.sh` once per clone).
 - Open every PR as a draft. CI skips drafts, so run the full checks locally, push once they pass,
   and mark the PR ready when the work is finished; see CLAUDE.md "CI and Actions minutes".
-- <project-specific conventions, non-obvious constraints, and traps an agent should know>
+- `CLAUDE.md`'s "Project layout" section is the hub's generic `action/action` layout block
+  (action.yml, Dockerfile, cmd/action); none of it applies here. The hub has no layout for a
+  config-only `.github` repo yet, and the governance sync overwrites that section on every run, so
+  it is left as scaffolded rather than hand-edited out of sync with the hub.
+- A new release here does not retroactively change a consumer already running at an older pinned
+  tag; a consumer picks up a change only by bumping its own `extends` tag.
