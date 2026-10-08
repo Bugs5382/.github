@@ -19,7 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Draft release notes
-        uses: release-drafter/release-drafter@v7
+        uses: Bugs5382/release-drafter-action@b7bedb08e209733bb916afe7e55637a047c3e7c0 # main, recreated after the history scrub
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
