@@ -36,6 +36,6 @@ Standard GitHub community-health files (`CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`,
 `SUPPORT.md`, `FUNDING.yml`) and issue/PR templates, inherited by any Bugs5382 repo that does not
 provide its own.
 
-## 🙏 Acknowledgements
+## 📄 License
 
-Scaffolded from [Bugs5382/project-template](https://github.com/Bugs5382/project-template).
+MIT. See [LICENSE](LICENSE).
